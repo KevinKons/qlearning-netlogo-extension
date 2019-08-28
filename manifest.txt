@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Extension-Name: qlearningextension
+Class-Manager: Extension
+NetLogo-Extension-API-Version: 6.1
