@@ -29,7 +29,7 @@ class ActionSelection () {
 
   def decreaseRate_= (r:Double) : Unit = {
     if(decreaseRate > 1 || decreaseRate < 0)
-      throw new ExtensionException("Epsilon must be a value between 0 and 1")
+      throw new ExtensionException("Decrease rate must be a value between 0 and 1")
     else
       p_decreaseRate = r
   }

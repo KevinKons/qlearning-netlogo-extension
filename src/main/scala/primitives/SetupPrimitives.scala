@@ -3,10 +3,25 @@ package primitives
 import model.Session
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
-import org.nlogo.core.Syntax.{AgentsetType, ListType, ReporterType, StringType}
+import org.nlogo.core.Syntax.{AgentsetType, ListType, ReporterType, StringType, NumberType}
 import org.nlogo.core.{LogoList, Syntax}
 import utils.Verifications
 
+class LearningRate extends Command {
+  override def getSyntax: Syntax = Syntax.commandSyntax(List(NumberType))
+
+  override def perform(args: Array[Argument], context: Context): Unit = {
+    Session.instance().learningRate = args(0).getDoubleValue
+  }
+}
+
+class DiscountFactor extends Command {
+  override def getSyntax: Syntax = Syntax.commandSyntax(List(NumberType))
+
+  override def perform(args: Array[Argument], context: Context): Unit = {
+    Session.instance().discountFactor = args(0).getDoubleValue
+  }
+}
 
 class ActionSelection extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(List(StringType, ListType))
