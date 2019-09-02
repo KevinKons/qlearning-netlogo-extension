@@ -13,18 +13,16 @@ class ActionSelection extends Command {
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val method : String = args(0).getString.toLowerCase
-    if(method == "e-greedy") {
-      val epsilon : Double = args(0).getList.get(0).asInstanceOf[Double]
-      val decreaseRate : Double = args(0).getList.get(1).asInstanceOf[Double]
-      if(epsilon > 1 || epsilon < 0) {
-        throw new ExtensionException("Epsilon must be a value between 0 and 1")
-      } else if(decreaseRate > 1 || decreaseRate < 0) {
-        throw new ExtensionException("Decrease rate must be a value between 0 and 1")
-      }
-
-    } else if (method == "random-normal") {
-
+    var epsilon : Double = 0
+    var decreaseRate : Double = 0
+    if(method.equalsIgnoreCase("e-greedy")) {
+       epsilon = args(1).getList.get(0).asInstanceOf[Double]
+       decreaseRate = args(1).getList.get(1).asInstanceOf[Double]
     }
+    val actionSelection = Session.instance().actionSelection
+    actionSelection.method = method
+    actionSelection.epsilon = epsilon
+    actionSelection.decreaseRate = decreaseRate
   }
 }
 

@@ -3,7 +3,8 @@ package model
 import org.nlogo.api.AnonymousReporter
 
 class Session (var stateDef : StateDefinition = new StateDefinition, var actions : List[String] = List(),
-               var rewardFunc: AnonymousReporter = null, var endEpisode: AnonymousReporter = null)
+               var rewardFunc: AnonymousReporter = null, var endEpisode: AnonymousReporter = null,
+               var actionSelection: ActionSelection = new ActionSelection)
 
 object Session {
   private var _instance : Session = null
