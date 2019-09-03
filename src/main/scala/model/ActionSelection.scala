@@ -1,6 +1,7 @@
 package model
 
-import org.nlogo.api.ExtensionException
+import org.nlogo.api.{AnonymousCommand, AnonymousReporter, ExtensionException}
+import org.nlogo.api.OutputDestination.Normal
 
 class ActionSelection () {
 
@@ -34,4 +35,40 @@ class ActionSelection () {
       p_decreaseRate = r
   }
 
+  def getAction(qlist : List[Double], context : org.nlogo.api.Context) : AnonymousCommand = {
+    var action : AnonymousCommand = null
+    if(method.equalsIgnoreCase("e-greedy"))
+      action = getActionByEgreedy(qlist, context)
+    else
+      action = getActionByRandomNormal(qlist)
+    action
+  }
+
+  def getActionByEgreedy(qlist: List[Double], context : org.nlogo.api.Context): AnonymousCommand = {
+    var actionPos : Int = 0
+    val randomGen = scala.util.Random
+    val random = randomGen.nextDouble()
+    if(random <= epsilon) {
+      context.workspace.outputObject(
+        "escolheu random" , null, true, false, Normal)
+      actionPos = randomGen.nextInt(qlist.length)
+    } else {
+      context.workspace.outputObject(
+        "não escolheu random" , null, true, false, Normal)
+      val max : Double = qlist.max
+      var maxList : List[Int] = List()
+      qlist.indices.foreach(i => {
+        if(qlist(i) == max)
+          maxList = maxList :+ i
+      })
+      actionPos = maxList(randomGen.nextInt(maxList.length))
+    }
+    Session.instance().actions(actionPos)
+  }
+
+  def getActionByRandomNormal(qlist: List[Double]): AnonymousCommand = {
+    val randomGen = scala.util.Random
+    val actionPos : Int = randomGen.nextInt(qlist.length)
+    Session.instance().actions(actionPos)
+  }
 }

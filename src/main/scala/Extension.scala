@@ -11,5 +11,7 @@ class Extension extends DefaultClassManager {
     manager.addPrimitive("action-selection", new ActionSelection)
     manager.addPrimitive("learning-rate", new LearningRate)
     manager.addPrimitive("discount-factor", new DiscountFactor)
+    manager.addPrimitive("learner", new Learner)
+    manager.addPrimitive("learning", new Learning)
   }
 }

@@ -1,13 +1,15 @@
 package model
 
-import org.nlogo.api.{AnonymousReporter, ExtensionException}
+import org.nlogo.api.{AnonymousCommand, AnonymousReporter, ExtensionException}
 
-class Session (var stateDef : StateDefinition = new StateDefinition, var actions : List[String] = List(),
+class Session (var stateDef : StateDefinition = new StateDefinition, var actions : List[AnonymousCommand] = List(),
                var rewardFunc: AnonymousReporter = null, var endEpisode: AnonymousReporter = null,
-               var actionSelection: ActionSelection = new ActionSelection) {
+               var actionSelection: ActionSelection = new ActionSelection, private var p_learningRate : Double = 0,
+               private var p_discountFactor : Double = 0, var agents : List[Agent] = List()) {
 
-  private var p_learningRate : Double = 0
-  private var p_discountFactor : Double = 0
+  def addAgent(agent : org.nlogo.api.Agent) : Unit = {
+    agents = agents :+ new Agent(agent = agent)
+  }
 
   def discountFactor : Double = p_discountFactor
   def learningRate : Double = p_learningRate

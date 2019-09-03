@@ -3,9 +3,17 @@ package primitives
 import model.Session
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
-import org.nlogo.core.Syntax.{AgentsetType, ListType, ReporterType, StringType, NumberType}
+import org.nlogo.core.Syntax.{AgentsetType, ListType, ReporterType, StringType, NumberType, CommandType}
 import org.nlogo.core.{LogoList, Syntax}
 import utils.Verifications
+
+class Learner extends Command {
+  override def getSyntax: Syntax = Syntax.commandSyntax()
+
+  override def perform(args: Array[Argument], context: Context): Unit = {
+    Session.instance().addAgent(context.getAgent)
+  }
+}
 
 class LearningRate extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(List(NumberType))
@@ -58,15 +66,16 @@ class Reward extends Command {
 }
 
 class Actions extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType))
+  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(CommandType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    val actionsTemp : LogoList = args(0).getList
+    val action : AnonymousCommand = args(0).getCommand
+    /*val actionsTemp : LogoList = args(0).getList
     var actions : List[String] = List()
     actionsTemp.indices.foreach(i => {
       actions = actions :+ actionsTemp.get(i).toString
-    })
-    Session.instance().actions = actions
+    })*/
+    Session.instance().actions = Session.instance().actions :+ action
   }
 }
 
