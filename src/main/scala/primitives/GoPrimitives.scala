@@ -4,13 +4,12 @@ import model.{Agent, AgentUtilities, Session}
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.core.Syntax
-import org.nlogo.core.Syntax.StringType
 
 
-class Learning extends Reporter {
-  override def getSyntax: Syntax = Syntax.reporterSyntax(ret = StringType)
+class Learning extends Command {
+  override def getSyntax: Syntax = Syntax.commandSyntax()
 
-  override def report(args: Array[Argument], context: Context): AnyRef = {
+  override def perform(args: Array[Argument], context: Context): Unit = {
     val session : Session = Session.instance()
     val agent : Agent = AgentUtilities.getAgent(Session.instance().agents, context.getAgent)
     val actualState : String = agent.getState
@@ -24,21 +23,33 @@ class Learning extends Reporter {
       actualQlist = optQlist.get
     }
 
-    val actionActualState : AnonymousCommand = session.actionSelection.getAction(actualQlist, context)
-    //var newQlist : List[Double] = actualQlist.patch(2, List(10.0), 1)
-    //agent.qTable += (actualState -> newQlist)
+    val actionActualState : Int = session.actionSelection.getAction(actualQlist, context)
 
-    val params : Array[AnyRef] = Array()
-    actionActualState.perform(context, params)
+    //val params : Array[AnyRef] = Array()
+    Session.instance().actions(actionActualState).perform(context, Array(AnyRef))
 
-    val reward : Double = Session.instance().rewardFunc.report(context, params).asInstanceOf[Double]
+    val qValueActualState : Double = actualQlist(actionActualState)
+    val reward : Double = session.rewardFunc.report(context, Array(AnyRef)).asInstanceOf[Double]
     val newState : String = agent.getState
     val newStateBestAction : Double = agent.getBestActionExpectedReward(newState)
 
-    //val newQvalue : Double =
+    val newQvalue : Double =
+      qValueActualState + (session.learningRate * (reward + (session.discountFactor * newStateBestAction) - qValueActualState))
 
+    val print : String =
+        "actualState: " + actualState + "\n" +
+        "qValueActualState: " + qValueActualState + "\n" +
+        "reward: " + reward + "\n" +
+        "newState: " + newState + "\n" +
+        "newQvalue: " + newQvalue + "\n"
 
-    actionActualState
+    context.workspace.outputObject(
+      "escolheu random" , null, true, false, Normal)
+
+    val newQlist : List[Double] = actualQlist.patch(actionActualState, List(newQvalue), 1)
+    agent.qTable += (actualState -> newQlist)
+
+    //val isEndState : Boolean = session.endEpisode.report(context, Array(AnyRef)).asInstanceOf[Boolean]
   }
 
 }

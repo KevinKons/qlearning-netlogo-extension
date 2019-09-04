@@ -35,8 +35,8 @@ class ActionSelection () {
       p_decreaseRate = r
   }
 
-  def getAction(qlist : List[Double], context : org.nlogo.api.Context) : AnonymousCommand = {
-    var action : AnonymousCommand = null
+    def getAction(qlist : List[Double], context : org.nlogo.api.Context) : Int = {
+    var action : Int = 0
     if(method.equalsIgnoreCase("e-greedy"))
       action = getActionByEgreedy(qlist, context)
     else
@@ -44,17 +44,13 @@ class ActionSelection () {
     action
   }
 
-  def getActionByEgreedy(qlist: List[Double], context : org.nlogo.api.Context): AnonymousCommand = {
+  def getActionByEgreedy(qlist: List[Double], context : org.nlogo.api.Context): Int = {
     var actionPos : Int = 0
     val randomGen = scala.util.Random
     val random = randomGen.nextDouble()
     if(random <= epsilon) {
-      context.workspace.outputObject(
-        "escolheu random" , null, true, false, Normal)
       actionPos = randomGen.nextInt(qlist.length)
     } else {
-      context.workspace.outputObject(
-        "não escolheu random" , null, true, false, Normal)
       val max : Double = qlist.max
       var maxList : List[Int] = List()
       qlist.indices.foreach(i => {
@@ -63,12 +59,12 @@ class ActionSelection () {
       })
       actionPos = maxList(randomGen.nextInt(maxList.length))
     }
-    Session.instance().actions(actionPos)
+    actionPos
   }
 
-  def getActionByRandomNormal(qlist: List[Double]): AnonymousCommand = {
+  def getActionByRandomNormal(qlist: List[Double]): Int = {
     val randomGen = scala.util.Random
     val actionPos : Int = randomGen.nextInt(qlist.length)
-    Session.instance().actions(actionPos)
+    actionPos
   }
 }
