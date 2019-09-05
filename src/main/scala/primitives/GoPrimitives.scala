@@ -36,18 +36,21 @@ class Learning extends Command {
     val newQvalue : Double =
       qValueActualState + (session.learningRate * (reward + (session.discountFactor * newStateBestAction) - qValueActualState))
 
-    val print : String =
-        "actualState: " + actualState + "\n" +
-        "qValueActualState: " + qValueActualState + "\n" +
-        "reward: " + reward + "\n" +
-        "newState: " + newState + "\n" +
-        "newQvalue: " + newQvalue + "\n"
-
-    context.workspace.outputObject(
-      "escolheu random" , null, true, false, Normal)
-
     val newQlist : List[Double] = actualQlist.patch(actionActualState, List(newQvalue), 1)
     agent.qTable += (actualState -> newQlist)
+
+    val print : String =
+        "actual State: " + actualState + "\n" +
+        "actual qlist: " + actualQlist.toString() + "\n" +
+        "qValue Actual State: " + qValueActualState + "\n" +
+        "reward: " + reward + "\n" +
+        "new State: " + newState + "\n" +
+        "new state best action: " + newStateBestAction + "\n" +
+        "new Qvalue: " + newQvalue + "\n" +
+        "new QList: " + newQlist + "\n-----------------------------"
+
+    context.workspace.outputObject(
+      print , null, true, false, Normal)
 
     //val isEndState : Boolean = session.endEpisode.report(context, Array(AnyRef)).asInstanceOf[Boolean]
   }
