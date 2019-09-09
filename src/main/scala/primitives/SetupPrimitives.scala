@@ -3,17 +3,18 @@ package primitives
 import model.Session
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
-import org.nlogo.core.Syntax.{AgentsetType, ListType, ReporterType, StringType, NumberType, CommandType}
+import org.nlogo.agent.Turtle
+import org.nlogo.core.Syntax.{AgentsetType, CommandType, ListType, NumberType, ReporterType, StringType, WildcardType}
+import org.nlogo.agent.World
 import org.nlogo.core.{LogoList, Syntax}
-import utils.Verifications
 
-class Learner extends Command {
+/*class Learner extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax()
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     Session.instance().addAgent(context.getAgent)
   }
-}
+}*/
 
 class LearningRate extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(List(NumberType))
@@ -96,21 +97,87 @@ class TesteAgentSetOrder extends Command {
 }
 
 class StateDefinition extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(AgentsetType, ListType))
+  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType, WildcardType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    val agentset : AgentSet = args(0).getAgentSet
-    val variablesTemp : LogoList = args(1).getList
-    var variables : List[String] = List()
-    variablesTemp.indices.foreach(i => {
-      val variable : String = variablesTemp.get(i).toString.toUpperCase
-      if(Verifications.isBreedOwnVariable(agentset, variable)) {
-        variables = variables :+ variable
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    val turtle : Turtle = context.world.asInstanceOf[World].getTurtle(context.getAgent.id)
+    if(optAgent.isEmpty) {
+      val variablesTemp : LogoList = args(0).getList
+      var variables : List[String] = List()
+      variablesTemp.indices.foreach(i => {
+        val variable : String = variablesTemp.get(i).toString.toUpperCase
+        if(turtle.ownsVariable(variable)) {
+          variables = variables :+ variable
+        } else {
+          throw new ExtensionException("Breed " + turtle.getBreed.printName + " doesn't own " + variable)
+        }
+      })
+
+      val stateDef : model.StateDefinition = model.StateDefinition(vars = variables)
+      try {
+        stateDef.reporterAux = args(1).getReporter
+      } catch {
+        case _ : ExtensionException =>
+          stateDef.stringAux = args(1).getString
       }
-    })
-    Session.instance().stateDef.addBreed(agentset, variables)
+
+      val agent : model.Agent = new model.Agent(agent = context.getAgent, stateDef = stateDef)
+      Session.instance().addAgent(agent)
+    } else {
+      throw new ExtensionException("State definition for agent " + context.getAgent.id + " is already defined. \n" +
+                                    "the breed of the agent is: " + turtle.getBreed.printName)
+    }
+
+    val optAgentt : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    context.workspace.outputObject(
+      optAgentt.get.stateDef.toString() , null, true, false, Normal)
+
   }
 }
+
+class StateDefinition1 extends Command {
+  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType, ReporterType))
+
+  override def perform(args: Array[Argument], context: Context): Unit = {
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    val turtle : Turtle = context.world.asInstanceOf[World].getTurtle(context.getAgent.id)
+    if(optAgent.isEmpty) {
+      val variablesTemp : LogoList = args(0).getList
+      var variables : List[String] = List()
+      variablesTemp.indices.foreach(i => {
+        val variable : String = variablesTemp.get(i).toString.toUpperCase
+        if(turtle.ownsVariable(variable)) {
+          variables = variables :+ variable
+        } else {
+          throw new ExtensionException("Breed " + turtle.getBreed.printName + " doesn't own " + variable)
+        }
+      })
+
+      val stateDef : model.StateDefinition = model.StateDefinition(vars = variables)
+
+        stateDef.reporterAux = args(1).getReporter
+
+      context.workspace.outputObject(
+        stateDef.reporterAux.report(context, Array()) , null, true, false, Normal)
+
+      val agent : model.Agent = new model.Agent(agent = context.getAgent, stateDef = stateDef)
+      Session.instance().addAgent(agent)
+    } else {
+      throw new ExtensionException("State definition for agent " + context.getAgent.id + " is already defined. \n" +
+        "the breed of the agent is: " + turtle.getBreed.printName)
+    }
+
+
+
+    val optAgentt : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    context.workspace.outputObject(
+      optAgentt.get.stateDef.toString() , null, true, false, Normal)
+
+  }
+}
+
+
 /*
 context.workspace.outputObject(
 "oi", null, true, false, Normal)*/

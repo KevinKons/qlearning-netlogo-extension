@@ -7,9 +7,17 @@ class Session (var stateDef : StateDefinition = new StateDefinition, var actions
                var actionSelection: ActionSelection = new ActionSelection, private var p_learningRate : Double = 0,
                private var p_discountFactor : Double = 0, var agents : List[Agent] = List()) {
 
-  def addAgent(agent : org.nlogo.api.Agent) : Unit = {
-    agents = agents :+ new Agent(agent = agent)
+  def addAgent(agent : Agent) : Unit = agents = agents :+ agent
+
+  def getAgent(agent : org.nlogo.api.Agent) : Option[Agent] = {
+    agents.foreach(a => {
+      if(a.agent == agent) {
+        return Option(a)
+      }
+    })
+    None
   }
+
 
   def discountFactor : Double = p_discountFactor
   def learningRate : Double = p_learningRate

@@ -5,7 +5,9 @@ import org.nlogo.api.ExtensionException
 
 import scala.collection.mutable
 
-class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var agent : org.nlogo.api.Agent = null) {
+class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var agent : org.nlogo.api.Agent = null,
+             var stateDef : StateDefinition = null) {
+
   def getBestActionExpectedReward(state : String): Double = {
     val optQlist : Option[List[Double]] = qTable.get(state)
     if(optQlist.isEmpty) { //Estado não visitado anteriormente

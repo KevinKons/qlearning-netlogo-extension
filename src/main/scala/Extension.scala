@@ -4,6 +4,7 @@ import primitives._
 class Extension extends DefaultClassManager {
   def load(manager: PrimitiveManager) {
     manager.addPrimitive("state-def", new StateDefinition)
+    manager.addPrimitive("state-def1", new StateDefinition1)
     manager.addPrimitive("agentset-order", new TesteAgentSetOrder)
     manager.addPrimitive("action", new Actions)
     manager.addPrimitive("end-episode", new EndEpisode)
@@ -11,7 +12,7 @@ class Extension extends DefaultClassManager {
     manager.addPrimitive("action-selection", new ActionSelection)
     manager.addPrimitive("learning-rate", new LearningRate)
     manager.addPrimitive("discount-factor", new DiscountFactor)
-    manager.addPrimitive("learner", new Learner)
+    //manager.addPrimitive("learner", new Learner)
     manager.addPrimitive("learning", new Learning)
   }
 }
