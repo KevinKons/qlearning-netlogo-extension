@@ -3,8 +3,8 @@ import primitives._
 
 class Extension extends DefaultClassManager {
   def load(manager: PrimitiveManager) {
-//    manager.addPrimitive("state-def", new StateDefinition)
-    manager.addPrimitive("state-def", new StateDefinition1)
+    manager.addPrimitive("state-def", new StateDefinition)
+    manager.addPrimitive("state-def-extra", new StateDefinitionExtra)
 //    manager.addPrimitive("agentset-order", new TesteAgentSetOrder)
     manager.addPrimitive("action", new Actions)
     manager.addPrimitive("end-episode", new EndEpisode)

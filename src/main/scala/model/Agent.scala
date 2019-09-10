@@ -27,8 +27,12 @@ class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var
       val turtle : Turtle = agent.world.asInstanceOf[World].getTurtle(agent.id)
       state += turtle.getVariable(v)
     })
-    val reporterAuxResult : String = stateDef.reporterAux.report(context, Array()).toString
-    state + reporterAuxResult
+    if(stateDef.reporterAux == null) {
+      state
+    } else {
+      val reporterAuxResult : String = stateDef.reporterAux.report(context, Array()).toString
+      state + reporterAuxResult
+    }
   }
 
   def discountFactor : Double = p_discountFactor

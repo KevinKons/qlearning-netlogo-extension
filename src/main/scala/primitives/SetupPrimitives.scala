@@ -127,7 +127,7 @@ class TesteAgentSetOrder extends Command {
 }*/
 
 class StateDefinition extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType, WildcardType))
+  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
@@ -145,13 +145,6 @@ class StateDefinition extends Command {
       })
 
       val stateDef : model.StateDefinition = model.StateDefinition(vars = variables)
-      try {
-        stateDef.reporterAux = args(1).getReporter
-      } catch {
-        case _ : ExtensionException =>
-          stateDef.stringAux = args(1).getString
-      }
-
       val agent : model.Agent = new model.Agent(agent = context.getAgent, stateDef = stateDef)
       Session.instance().addAgent(agent)
     } else {
@@ -166,7 +159,7 @@ class StateDefinition extends Command {
   }
 }
 
-class StateDefinition1 extends Command {
+class StateDefinitionExtra extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType, ReporterType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
@@ -186,10 +179,7 @@ class StateDefinition1 extends Command {
 
       val stateDef : model.StateDefinition = model.StateDefinition(vars = variables)
 
-        stateDef.reporterAux = args(1).getReporter
-
-      context.workspace.outputObject(
-        stateDef.reporterAux.report(context, Array()) , null, true, false, Normal)
+      stateDef.reporterAux = args(1).getReporter
 
       val agent : model.Agent = new model.Agent(agent = context.getAgent, stateDef = stateDef)
       Session.instance().addAgent(agent)
@@ -197,13 +187,6 @@ class StateDefinition1 extends Command {
       throw new ExtensionException("State definition for agent " + context.getAgent.id + " is already defined. \n" +
         "the breed of the agent is: " + turtle.getBreed.printName)
     }
-
-
-
-    val optAgentt : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    context.workspace.outputObject(
-      optAgentt.get.stateDef.toString() , null, true, false, Normal)
-
   }
 }
 
