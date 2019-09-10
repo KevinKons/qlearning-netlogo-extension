@@ -8,8 +8,8 @@ import scala.collection.mutable
 class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var agent : org.nlogo.api.Agent = null,
              var stateDef : StateDefinition = null, var actions : List[AnonymousCommand] = List(),
              var rewardFunc: AnonymousReporter = null, var endEpisode: AnonymousReporter = null,
-             var actionSelection: ActionSelection = new ActionSelection, private var p_learningRate : Double = 0,
-             private var p_discountFactor : Double = 0) {
+             var actionSelection: ActionSelection = new ActionSelection, private var p_learningRate : Double = -1,
+             private var p_discountFactor : Double = -1) {
 
   def getBestActionExpectedReward(state : String): Double = {
     val optQlist : Option[List[Double]] = qTable.get(state)

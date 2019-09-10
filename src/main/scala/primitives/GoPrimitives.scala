@@ -1,6 +1,6 @@
 package primitives
 
-import model.{Agent, AgentUtilities, Session}
+import model.{Agent, Session}
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.core.Syntax
@@ -10,12 +10,24 @@ class Learning extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax()
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    val session : Session = Session.instance()
     val optAgent : Option[Agent] = Session.instance().getAgent(context.getAgent)
     if(optAgent.isEmpty) {
       throw new ExtensionException("Agent " + context.getAgent.id + " isn't a learner agent")
     } else {
       val agent : Agent = optAgent.get
+
+      if(agent.actions.isEmpty)
+        throw new ExtensionException("No action has been defined for agent " + context.getAgent.id)
+
+      if(agent.learningRate == -1)
+        throw new ExtensionException("No learning rate has been defined for agent " + context.getAgent.id)
+
+      if(agent.discountFactor == -1)
+        throw new ExtensionException("No discount factor has been defined for agent " + context.getAgent.id)
+
+      if(agent.actionSelection.method == "")
+        throw new ExtensionException("No action selection method has been defined for agent " + context.getAgent.id)
+
       val actualState : String = agent.getState(context)
       var actualQlist : List[Double] = null
       val optQlist : Option[List[Double]] = agent.qTable.get(actualState)
