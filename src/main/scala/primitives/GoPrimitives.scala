@@ -33,7 +33,11 @@ class Learning extends Command {
       agent.actions(actionActualState).perform(context, Array(AnyRef))
 
       val qValueActualState : Double = actualQlist(actionActualState)
-      val reward : Double = agent.rewardFunc.report(context, Array(AnyRef)).asInstanceOf[Double]
+      val reward : Double = try agent.rewardFunc.report(context, Array(AnyRef)).asInstanceOf[Double]
+      catch {
+        case _ : NullPointerException =>
+          throw new ExtensionException("No reward function for agent " + context.getAgent.id + " was defined")
+      }
       val newState : String = agent.getState(context)
       val newStateBestAction : Double = agent.getBestActionExpectedReward(newState)
 
