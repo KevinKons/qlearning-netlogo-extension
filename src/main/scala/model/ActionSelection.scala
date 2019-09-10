@@ -35,13 +35,13 @@ class ActionSelection () {
   }
 
     def getAction(qlist : List[Double], context : org.nlogo.api.Context) : Int = {
-    var action : Int = 0
-    if(method.equalsIgnoreCase("e-greedy"))
-      action = getActionByEgreedy(qlist, context)
-    else
-      action = getActionByRandomNormal(qlist)
-    action
-  }
+      var action : Int = 0
+      if(method.equalsIgnoreCase("e-greedy"))
+        action = getActionByEgreedy(qlist, context)
+      else
+        action = getActionByRandomNormal(qlist)
+      action
+    }
 
   def getActionByEgreedy(qlist: List[Double], context : org.nlogo.api.Context): Int = {
     var actionPos : Int = 0

@@ -52,14 +52,3 @@ class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var
     p_learningRate = r
   }
 }
-
-object AgentUtilities {
-  def getAgent(agents : List[Agent], agent : org.nlogo.api.Agent) : Agent = {
-    Session.instance().agents.foreach(a => {
-      if(a.agent == agent) {
-        return a
-      }
-    })
-    throw new ExtensionException(agent + " is not a learner agent")
-  }
-}
