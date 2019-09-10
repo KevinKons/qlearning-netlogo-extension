@@ -4,23 +4,21 @@ import model.Session
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.agent.Turtle
-import org.nlogo.core.Syntax.{AgentsetType, CommandType, ListType, NumberType, ReporterType, StringType, WildcardType}
+import org.nlogo.core.Syntax.{CommandType, ListType, NumberType, ReporterType, StringType, WildcardType}
 import org.nlogo.agent.World
 import org.nlogo.core.{LogoList, Syntax}
-
-/*class Learner extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax()
-
-  override def perform(args: Array[Argument], context: Context): Unit = {
-    Session.instance().addAgent(context.getAgent)
-  }
-}*/
 
 class LearningRate extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(List(NumberType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    Session.instance().learningRate = args(0).getDoubleValue
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException(
+        "You should first define a state definition to this agent. Agent id: " + context.getAgent.id)
+    } else {
+      optAgent.get.learningRate = args(0).getDoubleValue
+    }
   }
 }
 
@@ -28,7 +26,13 @@ class DiscountFactor extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(List(NumberType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    Session.instance().discountFactor = args(0).getDoubleValue
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException(
+        "You should first define a state definition to this agent. Agent id: " + context.getAgent.id)
+    } else {
+      optAgent.get.discountFactor = args(0).getDoubleValue
+    }
   }
 }
 
@@ -36,17 +40,24 @@ class ActionSelection extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(List(StringType, ListType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    val method : String = args(0).getString.toLowerCase
-    var epsilon : Double = 0
-    var decreaseRate : Double = 0
-    if(method.equalsIgnoreCase("e-greedy")) {
-       epsilon = args(1).getList.get(0).asInstanceOf[Double]
-       decreaseRate = args(1).getList.get(1).asInstanceOf[Double]
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException(
+        "You should first define a state definition to the agent. Agent id: " + context.getAgent.id)
+    } else {
+      val method : String = args(0).getString.toLowerCase
+      var epsilon : Double = 0
+      var decreaseRate : Double = 0
+      if(method.equalsIgnoreCase("e-greedy")) {
+         epsilon = args(1).getList.get(0).asInstanceOf[Double]
+         decreaseRate = args(1).getList.get(1).asInstanceOf[Double]
+      }
+      val actionSelection = optAgent.get.actionSelection
+      actionSelection.method = method
+      actionSelection.epsilon = epsilon
+      actionSelection.decreaseRate = decreaseRate
     }
-    val actionSelection = Session.instance().actionSelection
-    actionSelection.method = method
-    actionSelection.epsilon = epsilon
-    actionSelection.decreaseRate = decreaseRate
+
   }
 }
 
@@ -54,7 +65,13 @@ class EndEpisode extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ReporterType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    Session.instance().endEpisode = args(0).getReporter
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException(
+        "You should first define a state definition to the agent. Agent id: " + context.getAgent.id)
+    } else {
+      optAgent.get.endEpisode = args(0).getReporter
+    }
   }
 }
 
@@ -62,7 +79,13 @@ class Reward extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ReporterType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    Session.instance().rewardFunc = args(0).getReporter
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException(
+        "You should first define an state definition to the agent. Agent id: " + context.getAgent.id)
+    } else {
+      optAgent.get.rewardFunc = args(0).getReporter
+    }
   }
 }
 
@@ -71,15 +94,22 @@ class Actions extends Command {
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val action : AnonymousCommand = args(0).getCommand
+    val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException(
+        "You should first define an state definition to the agent. Agent id: " + context.getAgent.id)
+    } else {
+      optAgent.get.actions = optAgent.get.actions :+ action
+    }
     /*val actionsTemp : LogoList = args(0).getList
     var actions : List[String] = List()
     actionsTemp.indices.foreach(i => {
       actions = actions :+ actionsTemp.get(i).toString
     })*/
-    Session.instance().actions = Session.instance().actions :+ action
+    //Session.instance().actions = Session.instance().actions :+ action
   }
 }
-
+/*
 class TesteAgentSetOrder extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax()
 
@@ -94,7 +124,7 @@ class TesteAgentSetOrder extends Command {
     })
   }
 
-}
+}*/
 
 class StateDefinition extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType, WildcardType))

@@ -1,7 +1,6 @@
 package model
 
-import org.nlogo.api.{AnonymousCommand, AnonymousReporter, ExtensionException}
-import org.nlogo.api.OutputDestination.Normal
+import org.nlogo.api.ExtensionException
 
 class ActionSelection () {
 

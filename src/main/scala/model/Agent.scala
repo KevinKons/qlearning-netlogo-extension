@@ -1,12 +1,15 @@
 package model
 
 import org.nlogo.agent.{Turtle, World}
-import org.nlogo.api.ExtensionException
+import org.nlogo.api.{AnonymousCommand, AnonymousReporter, ExtensionException, Context}
 
 import scala.collection.mutable
 
 class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var agent : org.nlogo.api.Agent = null,
-             var stateDef : StateDefinition = null) {
+             var stateDef : StateDefinition = null, var actions : List[AnonymousCommand] = List(),
+             var rewardFunc: AnonymousReporter = null, var endEpisode: AnonymousReporter = null,
+             var actionSelection: ActionSelection = new ActionSelection, private var p_learningRate : Double = 0,
+             private var p_discountFactor : Double = 0) {
 
   def getBestActionExpectedReward(state : String): Double = {
     val optQlist : Option[List[Double]] = qTable.get(state)
@@ -18,19 +21,31 @@ class Agent (var qTable : mutable.Map[String, List[Double]] = mutable.Map(), var
     }
   }
 
-  def getState : String = {
+  def getState(context : Context) : String = {
     var state : String = ""
-    for ((agentset, fields) <- Session.instance().stateDef.breedVar) {
-      agentset.agents.forEach(a => {
-        fields.foreach(f => {
-          val world : World = a.world.asInstanceOf[World]
-          val turtle : Turtle = world.getTurtle(a.id)
-          val fieldValue = turtle.getVariable(f)
-          state += fieldValue
-        })
-      })
+    stateDef.vars.foreach(v => {
+      val turtle : Turtle = agent.world.asInstanceOf[World].getTurtle(agent.id)
+      state += turtle.getVariable(v)
+    })
+    val reporterAuxResult : String = stateDef.reporterAux.report(context, Array()).toString
+    state + reporterAuxResult
+  }
+
+  def discountFactor : Double = p_discountFactor
+  def learningRate : Double = p_learningRate
+
+  def discountFactor_= (f:Double): Unit = {
+    if(f > 1 || f < 0) {
+      throw new ExtensionException("Discount factor must be a value between 0 and 1")
     }
-    state
+    p_discountFactor = f
+  }
+
+  def learningRate_= (r : Double): Unit = {
+    if(r > 1 || r < 0) {
+      throw new ExtensionException("Learning rate must be a value between 0 and 1")
+    }
+    p_learningRate = r
   }
 }
 
