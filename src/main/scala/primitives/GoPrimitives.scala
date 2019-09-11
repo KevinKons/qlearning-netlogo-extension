@@ -4,6 +4,9 @@ import model.{Agent, Session}
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.core.Syntax
+import org.nlogo.core.Syntax.NumberType
+import org.nlogo.api.ScalaConversions._
+
 
 
 class Learning extends Command {
@@ -71,9 +74,24 @@ class Learning extends Command {
 
       context.workspace.outputObject(
         print , null, true, false, Normal)
+
+      val isEndEpisode : Boolean = agent.isEndEpisode.report(context, Array()).asInstanceOf[Boolean]
+      if(isEndEpisode) {
+        agent.episode = agent.episode + 1
+        if(agent.actionSelection.epsilon - agent.actionSelection.decreaseRate < 0)
+          agent.actionSelection.epsilon = 0
+        else if (agent.actionSelection.epsilon - agent.actionSelection.decreaseRate > 0)
+          agent.actionSelection.epsilon = agent.actionSelection.epsilon - agent.actionSelection.decreaseRate
+        agent.resetEpisode.perform(context, Array())
+      }
     }
-
-    //val isEndState : Boolean = session.endEpisode.report(context, Array(AnyRef)).asInstanceOf[Boolean]
   }
+}
 
+class GetEpisode extends Reporter {
+  override def getSyntax: Syntax = Syntax.reporterSyntax(ret = NumberType)
+
+  override def report(args: Array[Argument], context: Context): AnyRef = {
+    Session.instance().getAgent(context.getAgent).get.episode.toLogoObject
+  }
 }

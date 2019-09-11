@@ -5,7 +5,6 @@ class Extension extends DefaultClassManager {
   def load(manager: PrimitiveManager) {
     manager.addPrimitive("state-def", new StateDefinition)
     manager.addPrimitive("state-def-extra", new StateDefinitionExtra)
-//    manager.addPrimitive("agentset-order", new TesteAgentSetOrder)
     manager.addPrimitive("action", new Actions)
     manager.addPrimitive("end-episode", new EndEpisode)
     manager.addPrimitive("reward", new Reward)
@@ -13,5 +12,6 @@ class Extension extends DefaultClassManager {
     manager.addPrimitive("learning-rate", new LearningRate)
     manager.addPrimitive("discount-factor", new DiscountFactor)
     manager.addPrimitive("learning", new Learning)
+    manager.addPrimitive("episode", new GetEpisode)
   }
 }

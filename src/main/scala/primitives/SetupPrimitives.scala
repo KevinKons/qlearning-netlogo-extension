@@ -13,12 +13,11 @@ class LearningRate extends Command {
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    if(optAgent.isEmpty) {
+    if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define a state definition to this agent. Agent id: " + context.getAgent.id)
-    } else {
+    else
       optAgent.get.learningRate = args(0).getDoubleValue
-    }
   }
 }
 
@@ -27,12 +26,11 @@ class DiscountFactor extends Command {
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    if(optAgent.isEmpty) {
+    if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define a state definition to this agent. Agent id: " + context.getAgent.id)
-    } else {
+    else
       optAgent.get.discountFactor = args(0).getDoubleValue
-    }
   }
 }
 
@@ -41,10 +39,10 @@ class ActionSelection extends Command {
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    if(optAgent.isEmpty) {
+    if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define a state definition to the agent. Agent id: " + context.getAgent.id)
-    } else {
+    else {
       val method : String = args(0).getString.toLowerCase
       var epsilon : Double = 0
       var decreaseRate : Double = 0
@@ -57,20 +55,20 @@ class ActionSelection extends Command {
       actionSelection.epsilon = epsilon
       actionSelection.decreaseRate = decreaseRate
     }
-
   }
 }
 
 class EndEpisode extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ReporterType))
+  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ReporterType, CommandType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    if(optAgent.isEmpty) {
+    if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define a state definition to the agent. Agent id: " + context.getAgent.id)
-    } else {
-      optAgent.get.endEpisode = args(0).getReporter
+    else {
+      optAgent.get.isEndEpisode = args(0).getReporter
+      optAgent.get.resetEpisode = args(1).getCommand
     }
   }
 }
@@ -80,12 +78,11 @@ class Reward extends Command {
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    if(optAgent.isEmpty) {
+    if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define an state definition to the agent. Agent id: " + context.getAgent.id)
-    } else {
+    else
       optAgent.get.rewardFunc = args(0).getReporter
-    }
   }
 }
 
@@ -95,36 +92,13 @@ class Actions extends Command {
   override def perform(args: Array[Argument], context: Context): Unit = {
     val action : AnonymousCommand = args(0).getCommand
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    if(optAgent.isEmpty) {
+    if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define an state definition to the agent. Agent id: " + context.getAgent.id)
-    } else {
+     else
       optAgent.get.actions = optAgent.get.actions :+ action
-    }
-    /*val actionsTemp : LogoList = args(0).getList
-    var actions : List[String] = List()
-    actionsTemp.indices.foreach(i => {
-      actions = actions :+ actionsTemp.get(i).toString
-    })*/
-    //Session.instance().actions = Session.instance().actions :+ action
   }
 }
-/*
-class TesteAgentSetOrder extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax()
-
-  override def perform(args: Array[Argument], context: Context): Unit = {
-    Session.instance().stateDef.breedVar.keys.foreach(keys => {
-      context.workspace.outputObject(
-        keys.printName, null, true, false, Normal)
-      keys.agents.forEach(agent => {
-        context.workspace.outputObject(
-          agent.id.toString + " " + agent.classDisplayName , null, true, false, Normal)
-      })
-    })
-  }
-
-}*/
 
 class StateDefinition extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(right = List(ListType))
