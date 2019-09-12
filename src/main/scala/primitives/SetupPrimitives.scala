@@ -4,7 +4,7 @@ import model.Session
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.agent.Turtle
-import org.nlogo.core.Syntax.{CommandType, ListType, NumberType, ReporterType, StringType, WildcardType}
+import org.nlogo.core.Syntax.{CommandType, ListType, NumberType, ReporterType, StringType, RepeatableType}
 import org.nlogo.agent.World
 import org.nlogo.core.{LogoList, Syntax}
 
@@ -87,16 +87,18 @@ class Reward extends Command {
 }
 
 class Actions extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(CommandType))
+  override def getSyntax: Syntax = Syntax.commandSyntax(right = List(CommandType | RepeatableType), defaultOption = Some(1))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
-    val action : AnonymousCommand = args(0).getCommand
     val optAgent : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
     if(optAgent.isEmpty)
       throw new ExtensionException(
         "You should first define an state definition to the agent. Agent id: " + context.getAgent.id)
-     else
-      optAgent.get.actions = optAgent.get.actions :+ action
+    else {
+      args.foreach(action => {
+        optAgent.get.actions = optAgent.get.actions :+ action.getCommand
+      })
+    }
   }
 }
 
