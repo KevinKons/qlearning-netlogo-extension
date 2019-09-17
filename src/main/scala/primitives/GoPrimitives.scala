@@ -4,13 +4,13 @@ import model.{Agent, Session}
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.core.Syntax
-import org.nlogo.core.Syntax.NumberType
+import org.nlogo.core.Syntax.{BooleanType, NumberType, OptionalType, StringType}
 import org.nlogo.api.ScalaConversions._
 
-
+import scala.collection.mutable
 
 class Learning extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax()
+  override def getSyntax: Syntax = Syntax.commandSyntax(List(BooleanType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[Agent] = Session.instance().getAgent(context.getAgent)
@@ -62,18 +62,20 @@ class Learning extends Command {
       val newQlist : List[Double] = actualQlist.patch(actionActualState, List(newQvalue), 1)
       agent.qTable += (actualState -> newQlist)
 
-      val print : String =
+      if(args(0).getBooleanValue) {
+        val print : String =
           "actual State: " + actualState + "\n" +
-          "actual qlist: " + actualQlist.toString() + "\n" +
-          "qValue Actual State: " + qValueActualState + "\n" +
-          "reward: " + reward + "\n" +
-          "new State: " + newState + "\n" +
-          "new state best action: " + newStateBestAction + "\n" +
-          "new Qvalue: " + newQvalue + "\n" +
-          "new QList: " + newQlist + "\n-----------------------------"
+            "actual qlist: " + actualQlist.toString() + "\n" +
+            "qValue Actual State: " + qValueActualState + "\n" +
+            "reward: " + reward + "\n" +
+            "new State: " + newState + "\n" +
+            "new state best action: " + newStateBestAction + "\n" +
+            "new Qvalue: " + newQvalue + "\n" +
+            "new QList: " + newQlist + "\n-----------------------------"
 
-      context.workspace.outputObject(
-        print , null, true, false, Normal)
+        context.workspace.outputObject(
+          print , null, true, false, Normal)
+      }
 
       val isEndEpisode : Boolean = agent.isEndEpisode.report(context, Array()).asInstanceOf[Boolean]
       if(isEndEpisode) {
@@ -95,3 +97,22 @@ class GetEpisode extends Reporter {
     Session.instance().getAgent(context.getAgent).get.episode.toLogoObject
   }
 }
+
+class GetQTable extends Reporter {
+  override def getSyntax: Syntax = Syntax.reporterSyntax(ret = StringType)
+
+  override def report(args: Array[Argument], context: Context): AnyRef = {
+    val qTable : mutable.Map[String, List[Double]] = Session.instance().getAgent(context.getAgent).get.qTable
+    var ret : String = "--------- Q-Table --------- \n"
+    for ((k,v) <- qTable) {
+      ret = ret + k + " -> "
+      v.foreach(e => {
+        ret = ret + e + " / "
+      })
+      ret = ret.substring(0, ret.length - 3) + "\n"
+    }
+    ret + "------------------------------" + "\n"
+  }
+}
+
+

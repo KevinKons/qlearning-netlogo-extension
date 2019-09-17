@@ -13,5 +13,6 @@ class Extension extends DefaultClassManager {
     manager.addPrimitive("discount-factor", new DiscountFactor)
     manager.addPrimitive("learning", new Learning)
     manager.addPrimitive("episode", new GetEpisode)
+    manager.addPrimitive("get-qtable", new GetQTable)
   }
 }
