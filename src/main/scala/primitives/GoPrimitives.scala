@@ -4,13 +4,17 @@ import model.{Agent, Session}
 import org.nlogo.api.OutputDestination.Normal
 import org.nlogo.api._
 import org.nlogo.core.Syntax
-import org.nlogo.core.Syntax.{BooleanType, NumberType, OptionalType, StringType}
+import org.nlogo.core.Syntax.{BooleanType, NumberType, StringType, RepeatableType}
 import org.nlogo.api.ScalaConversions._
 
 import scala.collection.mutable
 
 class Learning extends Command {
-  override def getSyntax: Syntax = Syntax.commandSyntax(List(BooleanType))
+  override def getSyntax: Syntax = Syntax.commandSyntax(
+    right = List(BooleanType | RepeatableType),
+    defaultOption = Some(0),
+    minimumOption = Some(0)
+  )
 
   override def perform(args: Array[Argument], context: Context): Unit = {
     val optAgent : Option[Agent] = Session.instance().getAgent(context.getAgent)
@@ -62,9 +66,9 @@ class Learning extends Command {
       val newQlist : List[Double] = actualQlist.patch(actionActualState, List(newQvalue), 1)
       agent.qTable += (actualState -> newQlist)
 
-      if(args(0).getBooleanValue) {
+      if(args.length > 0 && args(0).getBooleanValue) {
         val print : String =
-          "actual State: " + actualState + "\n" +
+            "actual State: " + actualState + "\n" +
             "actual qlist: " + actualQlist.toString() + "\n" +
             "qValue Actual State: " + qValueActualState + "\n" +
             "reward: " + reward + "\n" +
