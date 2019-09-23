@@ -8,28 +8,34 @@ patches-own [
   reward
 ]
 
+to-report bla
+  report "c"
+end
+
+
 to setup
-  ca
+  clear-all
 
   set-current-plot "Ave Reward Per Episode"
   set-plot-y-range -10 10
 
   ask patches [set pcolor grey set reward -1 set plabel reward]
-  ask patches with [pycor = 0 and pxcor > 0 and pxcor < 11][set pcolor blue set reward -10 set plabel reward]
+  ask patches with [pycor = 0 and pxcor > 0 and pxcor < 11][set pcolor blue set reward -100 set plabel reward]
   ask patch 0 0 [set pcolor red + 1]
-  ask patch 11 0 [set pcolor green set reward 10 set plabel reward]
+  ask patch 11 0 [set pcolor green]
 
   ask patch 0 0 [sprout-walkers 1[set color yellow]]
 
   ask Walkers [
-    qlearningextension:state-def ["xcor" "ycor"]
+    qlearningextension:state-def-extra ["xcor" "ycor"] [bla]
     (qlearningextension:actions [goUp] [goDown] [goLeft] [goRight])
     qlearningextension:reward [rewardFunc]
     qlearningextension:end-episode [isEndState] resetEpisode
-    qlearningextension:action-selection "e-greedy" [0.1 0.08]
+    qlearningextension:action-selection "e-greedy" [0.5 0.08]
     qlearningextension:learning-rate 1
     qlearningextension:discount-factor 0.75
 
+    ; used to create the plot
     create-temporary-plot-pen (word who)
     set-plot-pen-color color
     set reward-list []
@@ -38,7 +44,7 @@ end
 
 to go
   ask Walkers [
-    (qlearningextension:learning true)
+    qlearningextension:learning
     print(qlearningextension:get-qtable)
   ]
 end
@@ -84,6 +90,9 @@ to-report isEndState
 end
 
 to resetEpisode
+  setxy 0 0
+
+  ; used to update the plot
   let rew-sum 0
   let length-rew 0
   foreach reward-list [ r ->
@@ -96,7 +105,6 @@ to resetEpisode
   plot avg-rew
 
   set reward-list []
-  setxy 0 0
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
