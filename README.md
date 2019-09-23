@@ -14,7 +14,7 @@ The first thing you need to do is an `ask` to the breed you want to be the learn
 * `qlearningextension:learning-rate learningRate` used to inform the learning rate, it expects a value between 0 and 1.
 * `qlearningextension:discount-factor discountFactor` used to inform the discount factor, it expects a value between 0 and 1.
 
-Obs: It is advisable to call a `clear-all` in the setup procedure, if don't called it the things will get duplicated.
+Obs: It is advisable to call a `clear-all` in the setup procedure, if don't called it things will get duplicated.
 
 Now, with everything setted up you can run the simulation. In your "go" routine inside an `ask` to the learner agent you can run the primitive `qlearningextension:learning`. This will select an action to the current state, perform the action, get the reward, update the Q-table, verify if the new state is an end state and if so will run the procedure passed to the extension in the `end-episode` primitive.
 
