@@ -19,3 +19,7 @@ Obs: It is advisable to call a `clear-all` in the setup procedure, if don't call
 Now, with everything setted up you can run the simulation. In your "go" routine inside an `ask` to the learner agent you can run the primitive `qlearningextension:learning`. This will select an action to the current state, perform the action, get the reward, update the Q-table, verify if the new state is an end state and if so will run the procedure passed to the extension in the `end-episode` primitive.
 
 To help you in debugging your simulations you can call the learning primitive in a little different way: `(qlearningextension:learning true)`, calling the primitive this way will make the extension print in the console the following values: The old state representation, the old Q-list (the Q-table values of the old state), the reward of the new state, the new state representation, the expected reward of the new state and the new Q-list. Another way to debugging your simulations calling the `qlearningextension:get-qtable` primitive, this will return a string with the current Q-table.
+
+## Example
+
+To make it easier to understand the usage of the extension we [implemented](https://github.com/KevinKons/qlearning-netlogo-extension/blob/v0.2/cliff-walking.nlogo) the classic [cliff-waking problem](https://medium.com/@lgvaz/understanding-q-learning-the-cliff-walking-problem-80198921abbc) using the extension.
