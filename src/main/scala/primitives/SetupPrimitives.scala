@@ -127,11 +127,6 @@ class StateDefinition extends Command {
       throw new ExtensionException("State definition for agent " + context.getAgent.id + " is already defined. \n" +
                                     "the breed of the agent is: " + turtle.getBreed.printName)
     }
-
-    val optAgentt : Option[model.Agent] = Session.instance().getAgent(context.getAgent)
-    context.workspace.outputObject(
-      optAgentt.get.stateDef.toString() , null, true, false, Normal)
-
   }
 }
 
