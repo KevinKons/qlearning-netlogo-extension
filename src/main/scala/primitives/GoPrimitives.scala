@@ -68,13 +68,11 @@ class Learning extends Command {
 
       if(args.length > 0 && args(0).getBooleanValue) {
         val print : String =
-            "actual State: " + actualState + "\n" +
-            "actual qlist: " + actualQlist.toString() + "\n" +
-            "qValue Actual State: " + qValueActualState + "\n" +
-            "reward: " + reward + "\n" +
+            "Old state: " + actualState + "\n" +
+            "Old qlist: " + actualQlist.toString() + "\n" +
+            "new state reward: " + reward + "\n" +
             "new State: " + newState + "\n" +
             "new state best action: " + newStateBestAction + "\n" +
-            "new Qvalue: " + newQvalue + "\n" +
             "new QList: " + newQlist + "\n-----------------------------"
 
         context.workspace.outputObject(
