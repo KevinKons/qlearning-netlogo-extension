@@ -2,7 +2,7 @@ package model
 
 import org.nlogo.api.ExtensionException
 
-class ActionSelection () {
+class ActionSelection (val randomGen : scala.util.Random = scala.util.Random) {
 
   private var p_method : String = ""
   private var p_epsilon : Double = 0
@@ -34,18 +34,8 @@ class ActionSelection () {
       p_decreaseRate = r
   }
 
-    def getAction(qlist : List[Double], context : org.nlogo.api.Context) : Int = {
-      var action : Int = 0
-      if(method.equalsIgnoreCase("e-greedy"))
-        action = getActionByEgreedy(qlist, context)
-      else
-        action = getActionByRandomNormal(qlist)
-      action
-    }
-
-  def getActionByEgreedy(qlist: List[Double], context : org.nlogo.api.Context): Int = {
+  def getAction(qlist : List[Double], context : org.nlogo.api.Context) : Int = {
     var actionPos : Int = 0
-    val randomGen = scala.util.Random
     val random = randomGen.nextDouble()
     if(random <= epsilon) {
       actionPos = randomGen.nextInt(qlist.length)
@@ -58,12 +48,6 @@ class ActionSelection () {
       })
       actionPos = maxList(randomGen.nextInt(maxList.length))
     }
-    actionPos
-  }
-
-  def getActionByRandomNormal(qlist: List[Double]): Int = {
-    val randomGen = scala.util.Random
-    val actionPos : Int = randomGen.nextInt(qlist.length)
     actionPos
   }
 }

@@ -165,6 +165,7 @@ class RandomSeed extends Command {
   override def getSyntax: Syntax = Syntax.commandSyntax(right = List(NumberType))
 
   override def perform(args: Array[Argument], context: Context): Unit = {
+
     Session.instance().getAgent(context.getAgent).get.actionSelection.randomGen.setSeed(args(0).getDoubleValue.asInstanceOf[Long])
   }
 }

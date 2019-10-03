@@ -82,10 +82,12 @@ class Learning extends Command {
       val isEndEpisode : Boolean = agent.isEndEpisode.report(context, Array()).asInstanceOf[Boolean]
       if(isEndEpisode) {
         agent.episode = agent.episode + 1
-        if(agent.actionSelection.epsilon - agent.actionSelection.decreaseRate < 0)
-          agent.actionSelection.epsilon = 0
-        else if (agent.actionSelection.epsilon - agent.actionSelection.decreaseRate > 0)
-          agent.actionSelection.epsilon = agent.actionSelection.epsilon - agent.actionSelection.decreaseRate
+        if(agent.actionSelection.method.equalsIgnoreCase("e-greedy")) {
+          if (agent.actionSelection.epsilon - agent.actionSelection.decreaseRate < 0)
+            agent.actionSelection.epsilon = 0
+          else if (agent.actionSelection.epsilon - agent.actionSelection.decreaseRate > 0)
+            agent.actionSelection.epsilon = agent.actionSelection.epsilon - agent.actionSelection.decreaseRate
+        }
         agent.resetEpisode.perform(context, Array())
       }
     }
