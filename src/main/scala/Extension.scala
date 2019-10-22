@@ -15,5 +15,6 @@ class Extension extends DefaultClassManager {
     manager.addPrimitive("episode", new GetEpisode)
     manager.addPrimitive("get-qtable", new GetQTable)
     manager.addPrimitive("random-seed", new RandomSeed)
+    manager.addPrimitive("decay-epsilon", new DecayEpsilon)
   }
 }

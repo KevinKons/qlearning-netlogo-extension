@@ -73,7 +73,10 @@ class Learning extends Command {
             "new state reward: " + reward + "\n" +
             "new State: " + newState + "\n" +
             "new state best action: " + newStateBestAction + "\n" +
-            "new QList: " + newQlist + "\n-----------------------------"
+            "new QList: " + newQlist +
+            "epsilon: " + agent.actionSelection.epsilon +
+            "\n-----------------------------"
+
 
         context.workspace.outputObject(
           print , null, true, false, Normal)
@@ -82,12 +85,12 @@ class Learning extends Command {
       val isEndEpisode : Boolean = agent.isEndEpisode.report(context, Array()).asInstanceOf[Boolean]
       if(isEndEpisode) {
         agent.episode = agent.episode + 1
-        if(agent.actionSelection.method.equalsIgnoreCase("e-greedy")) {
-          if (agent.actionSelection.epsilon - agent.actionSelection.decreaseRate < 0)
-            agent.actionSelection.epsilon = 0
-          else if (agent.actionSelection.epsilon - agent.actionSelection.decreaseRate > 0)
-            agent.actionSelection.epsilon = agent.actionSelection.epsilon - agent.actionSelection.decreaseRate
-        }
+        agent.actionSelection.epsilon = agent.actionSelection.epsilon * agent.actionSelection.decreaseRate
+//        if(agent.actionSelection.method.equalsIgnoreCase("e-greedy")) {
+//          if (agent.actionSelection.epsilon * agent.actionSelection.decreaseRate < 0)
+//            agent.actionSelection.epsilon = 0
+//          else if (agent.actionSelection.epsilon * agent.actionSelection.decreaseRate > 0)
+//        }
         agent.resetEpisode.perform(context, Array())
       }
     }
@@ -116,6 +119,20 @@ class GetQTable extends Reporter {
       ret = ret.substring(0, ret.length - 3) + "\n"
     }
     ret + "------------------------------" + "\n"
+  }
+}
+
+class DecayEpsilon extends Command {
+  override def getSyntax: Syntax = Syntax.commandSyntax()
+
+  override def perform(args: Array[Argument], context: Context): Unit = {
+    val optAgent : Option[Agent] = Session.instance().getAgent(context.getAgent)
+    if(optAgent.isEmpty) {
+      throw new ExtensionException("Agent " + context.getAgent.id + " isn't a learner agent")
+    } else {
+      val agent : Agent = optAgent.get
+      agent.actionSelection.epsilon = agent.actionSelection.epsilon * agent.actionSelection.decreaseRate
+    }
   }
 }
 
